@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELL Vocab Flashcards</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel for JSX compilation in the browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-50">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- SVG Icon Components ---
+    const Volume2 = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+      </svg>
+    );
+    const ArrowLeft = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    );
+    const ArrowRight = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    );
+    const CircleIcon = ({ size = 24, className = "", strokeWidth = 2 }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <circle cx="12" cy="12" r="10"></circle>
+      </svg>
+    );
+    const XIcon = ({ size = 24, className = "", strokeWidth = 2 }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    );
+    const RotateCcw = ({ size = 24, className = "" }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <polyline points="1 4 1 10 7 10"></polyline>
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+      </svg>
+    );
+
+    // --- Vocabulary Data ---
+    const vocabData = [
+      { word: "investigate (investigation)", phonetic: "/ɪnˈvɛstɪˌɡeɪt/", kr: "조사하다", cn: "调查 (diào chá)", jp: "調査する (ちょうさする)", ex: "Scientists <b>investigate</b> the ocean." },
+      { word: "survey", phonetic: "/ˈsɜːrveɪ/", kr: "설문 조사하다", cn: "调查 (diào chá)", jp: "アンケートをとる (あんけーとをとる)", ex: "We <b>survey</b> the class to find their favorite colors." },
+      { word: "research", phonetic: "/ˈriːsɜːrtʃ/", kr: "연구하다", cn: "研究 (yán jiū)", jp: "研究する (けんきゅうする)", ex: "They do <b>research</b> on space." },
+      { word: "record", phonetic: "/rɪˈkɔːrd/", kr: "기록하다", cn: "记录 (jì lù)", jp: "記録する (きろくする)", ex: "Please <b>record</b> the numbers in your notebook." },
+      { word: "collect", phonetic: "/kəˈlɛkt/", kr: "모으다", cn: "收集 (shōu jí)", jp: "集める (あつめる)", ex: "Bees <b>collect</b> honey from flowers." },
+      { word: "evidence", phonetic: "/ˈɛvɪdəns/", kr: "증거", cn: "证据 (zhèng jù)", jp: "証拠 (しょうこ)", ex: "Footprints are good <b>evidence</b>." },
+      { word: "data", phonetic: "/ˈdeɪtə/", kr: "자료, 데이터", cn: "数据 (shù jù)", jp: "データ (でーた)", ex: "We put our <b>data</b> in a chart." },
+      { word: "result", phonetic: "/rɪˈzʌlt/", kr: "결과", cn: "结果 (jié guǒ)", jp: "結果 (けっか)", ex: "What is the <b>result</b> of the game?" },
+      { word: "conclusion", phonetic: "/kənˈkluːʒən/", kr: "결론", cn: "结论 (jié lùn)", jp: "結論 (けつろん)", ex: "Our <b>conclusion</b> is that plants need water." },
+      { word: "reason", phonetic: "/ˈriːzən/", kr: "이유", cn: "原因 (yuán yīn)", jp: "理由 (りゆう)", ex: "What is the <b>reason</b> you are late?" },
+      { word: "source", phonetic: "/sɔːrs/", kr: "출처, 원천", cn: "来源 (lái yuán)", jp: "源 (みなもと)", ex: "The sun is our main <b>source</b> of light." },
+      { word: "explain", phonetic: "/ɪkˈspleɪn/", kr: "설명하다", cn: "解释 (jiě shì)", jp: "説明する (せつめいする)", ex: "Can you <b>explain</b> how this works?" },
+      { word: "predict", phonetic: "/prɪˈdɪkt/", kr: "예측하다", cn: "预测 (yù cè)", jp: "予測する (よそくする)", ex: "I <b>predict</b> it will rain tomorrow." },
+      { word: "refer to", phonetic: "/rɪˈfɜːr tuː/", kr: "~을 참조하다, 언급하다", cn: "参考 (cān kǎo)", jp: "参照する (さんしょうする)", ex: "Please <b>refer to</b> page 10 in your book." },
+      { word: "define", phonetic: "/dɪˈfaɪn/", kr: "정의하다", cn: "定义 (dìng yì)", jp: "定義する (ていぎする)", ex: "Can you <b>define</b> this word for me?" },
+      { word: "cause", phonetic: "/kɔːz/", kr: "원인, 일으키다", cn: "原因 (yuán yīn)", jp: "原因 (げんいん)", ex: "The heavy rain will <b>cause</b> a flood." },
+      { word: "effect", phonetic: "/ɪˈfɛkt/", kr: "효과, 영향", cn: "效果 (xiào guǒ)", jp: "効果 (こうか)", ex: "The medicine had a good <b>effect</b>." },
+      { word: "affect", phonetic: "/əˈfɛkt/", kr: "영향을 미치다", cn: "影响 (yǐng xiǎng)", jp: "影響する (えいきょうする)", ex: "The cold weather will <b>affect</b> the crops." },
+      { word: "impact", phonetic: "/ˈɪmpækt/", kr: "강한 영향, 충격", cn: "影响 (yǐng xiǎng)", jp: "影響 (えいきょう)", ex: "The new rule has a big <b>impact</b> on us." },
+      { word: "influence", phonetic: "/ˈɪnfluəns/", kr: "영향(력)", cn: "影响 (yǐng xiǎng)", jp: "影響 (えいきょう)", ex: "Friends can <b>influence</b> what we like." },
+      { word: "structure", phonetic: "/ˈstrʌktʃər/", kr: "구조", cn: "结构 (jié gòu)", jp: "構造 (こうぞう)", ex: "A bridge has a strong <b>structure</b>." },
+      { word: "environment", phonetic: "/ɪnˈvaɪrənmənt/", kr: "환경", cn: "环境 (huán jìng)", jp: "環境 (かんきょう)", ex: "We must protect our <b>environment</b>." },
+      { word: "observe (observation)", phonetic: "/əbˈzɜːrv/", kr: "관찰하다", cn: "观察 (guān chá)", jp: "観察する (かんさつする)", ex: "We <b>observe</b> the birds in the tree." },
+      { word: "notice", phonetic: "/ˈnoʊtɪs/", kr: "알아차리다", cn: "注意 (zhù yì)", jp: "気付く (きづく)", ex: "Did you <b>notice</b> the new poster?" },
+      { word: "describe", phonetic: "/dɪˈskraɪb/", kr: "묘사하다, 설명하다", cn: "描述 (miáo shù)", jp: "描写する (びょうしゃする)", ex: "Please <b>describe</b> your lost dog." },
+      { word: "compare (comparison)", phonetic: "/kəmˈpɛr/", kr: "비교하다", cn: "比较 (bǐ jiào)", jp: "比較する (ひかくする)", ex: "Let's <b>compare</b> the sizes of these two apples." },
+      { word: "contrast", phonetic: "/ˈkɒntræst/", kr: "대조하다", cn: "对比 (duì bǐ)", jp: "対照する (たいしょうする)", ex: "The black and white colors show a sharp <b>contrast</b>." },
+      { word: "classify", phonetic: "/ˈklæsɪfaɪ/", kr: "분류하다", cn: "分类 (fēn lèi)", jp: "分類する (ぶんるいする)", ex: "We <b>classify</b> animals into different groups." },
+      { word: "identify", phonetic: "/aɪˈdɛntɪfaɪ/", kr: "확인하다, 식별하다", cn: "识别 (shí bié)", jp: "特定する (とくていする)", ex: "Can you <b>identify</b> this strange bug?" },
+      { word: "process", phonetic: "/ˈprɒsɛs/", kr: "과정", cn: "过程 (guò chéng)", jp: "過程 (かてい)", ex: "Making a cake is a fun <b>process</b>." },
+      { word: "experiment", phonetic: "/ɪkˈspɛrɪmənt/", kr: "실험", cn: "实验 (shí yàn)", jp: "実験 (じっけん)", ex: "We do a science <b>experiment</b> in class." },
+      { word: "conduct", phonetic: "/kənˈdʌkt/", kr: "수행하다", cn: "进行 (jìn xíng)", jp: "実施する (じっしする)", ex: "We will <b>conduct</b> a test tomorrow." },
+      { word: "measure", phonetic: "/ˈmɛʒər/", kr: "측정하다", cn: "测量 (cè liáng)", jp: "測る (はかる)", ex: "Use a ruler to <b>measure</b> the line." },
+      { word: "element", phonetic: "/ˈɛlɪmənt/", kr: "요소", cn: "元素 (yuán sù)", jp: "要素 (ようそ)", ex: "Water is an important <b>element</b> for life." },
+      { word: "factor", phonetic: "/ˈfæktər/", kr: "요인", cn: "因素 (yīn sù)", jp: "要因 (よういん)", ex: "Sunlight is a key <b>factor</b> for plant growth." },
+      { word: "relationship", phonetic: "/rɪˈleɪʃənʃɪp/", kr: "관계", cn: "关系 (guān xì)", jp: "関係 (かんけい)", ex: "Dogs and humans have a close <b>relationship</b>." },
+      { word: "increase", phonetic: "/ɪnˈkriːs/", kr: "증가하다", cn: "增加 (zēng jiā)", jp: "増加する (ぞうかする)", ex: "The number of birds will <b>increase</b> in spring." },
+      { word: "decrease", phonetic: "/dɪˈkriːs/", kr: "감소하다", cn: "减少 (jiǎn shǎo)", jp: "減少する (げんしょうする)", ex: "The temperature will <b>decrease</b> at night." },
+      { word: "similar", phonetic: "/ˈsɪmɪlər/", kr: "비슷한", cn: "相似 (xiāng sì)", jp: "似ている (にている)", ex: "Those two cars look very <b>similar</b>." },
+      { word: "different", phonetic: "/ˈdɪfərənt/", kr: "다른", cn: "不同 (bù tóng)", jp: "異なる (ことなる)", ex: "My bag is <b>different</b> from yours." },
+      { word: "communication", phonetic: "/kəˌmjuːnɪˈkeɪʃən/", kr: "의사소통", cn: "交流 (jiāo liú)", jp: "コミュニケーション (こみゅにけーしょん)", ex: "Talking is a form of <b>communication</b>." },
+      { word: "representation", phonetic: "/ˌrɛprɪzɛnˈteɪʃən/", kr: "표현, 대표", cn: "代表 (dài biǎo)", jp: "表現 (ひょうげん)", ex: "A map is a <b>representation</b> of the earth." },
+      { word: "chart", phonetic: "/tʃɑːrt/", kr: "차트, 도표", cn: "图表 (tú biǎo)", jp: "図表 (ずひょう)", ex: "Look at the <b>chart</b> to see the scores." },
+      { word: "graph", phonetic: "/ɡræf/", kr: "그래프", cn: "图表 (tú biǎo)", jp: "グラフ (ぐらふ)", ex: "A bar <b>graph</b> shows differences clearly." },
+      { word: "diagram", phonetic: "/ˈdaɪəɡræm/", kr: "도해, 다이어그램", cn: "图解 (tú jiě)", jp: "図 (ず)", ex: "Draw a <b>diagram</b> of a plant cell." },
+      { word: "model", phonetic: "/ˈmɒdl/", kr: "모형", cn: "模型 (mó xíng)", jp: "模型 (もけい)", ex: "We built a small <b>model</b> of a house." },
+      { word: "demonstrate", phonetic: "/ˈdɛmənstreɪt/", kr: "시범을 보이다", cn: "演示 (yǎn shì)", jp: "実演する (じつえんする)", ex: "The teacher will <b>demonstrate</b> how to fold the paper." },
+      { word: "summarize", phonetic: "/ˈsʌməraɪz/", kr: "요약하다", cn: "总结 (zǒng jié)", jp: "要約する (ようやくする)", ex: "Can you <b>summarize</b> the story in three sentences?" },
+      { word: "infer", phonetic: "/ɪnˈfɜːr/", kr: "추론하다", cn: "推断 (tuī duàn)", jp: "推論する (すいろんする)", ex: "We can <b>infer</b> that she is happy because she is smiling." },
+      { word: "characteristic", phonetic: "/ˌkærɪktəˈrɪstɪk/", kr: "특징", cn: "特征 (tè zhēng)", jp: "特徴 (とくちょう)", ex: "A trunk is a main <b>characteristic</b> of an elephant." },
+      { word: "feature", phonetic: "/ˈfiːtʃər/", kr: "특징", cn: "特点 (tè diǎn)", jp: "特徴 (とくちょう)", ex: "Wings are a special <b>feature</b> of birds." },
+      { word: "property", phonetic: "/ˈprɒpərti/", kr: "성질, 속성", cn: "性质 (xìng zhì)", jp: "性質 (せいしつ)", ex: "Hardness is a <b>property</b> of a rock." },
+      { word: "function", phonetic: "/ˈfʌŋkʃən/", kr: "기능", cn: "功能 (gōng néng)", jp: "機能 (きのう)", ex: "The <b>function</b> of a heart is to pump blood." },
+      { word: "variety", phonetic: "/vəˈraɪəti/", kr: "다양성", cn: "多样 (duō yàng)", jp: "多様性 (たようせい)", ex: "The store sells a wide <b>variety</b> of toys." },
+      { word: "analyze (analysis)", phonetic: "/ˈænəlaɪz/", kr: "분석하다", cn: "分析 (fēn xī)", jp: "分析する (ぶんせきする)", ex: "Let's <b>analyze</b> the math problem together." },
+      { word: "examine", phonetic: "/ɪɡˈzæmɪn/", kr: "조사하다, 검토하다", cn: "检查 (jiǎn chá)", jp: "調べる (しらべる)", ex: "The doctor will <b>examine</b> your throat." },
+      { word: "evaluate", phonetic: "/ɪˈvæljueɪt/", kr: "평가하다", cn: "评价 (píng jià)", jp: "評価する (ひょうかする)", ex: "We must <b>evaluate</b> the results of the test." },
+      { word: "represent", phonetic: "/ˌrɛprɪˈzɛnt/", kr: "나타내다, 상징하다", cn: "代表 (dài biǎo)", jp: "表す (あらわす)", ex: "The red color can <b>represent</b> danger." },
+      { word: "organize", phonetic: "/ˈɔːrɡənaɪz/", kr: "정리하다", cn: "组织 (zǔ zhī)", jp: "整理する (せいりする)", ex: "Please <b>organize</b> your desk before you leave." },
+      { word: "period", phonetic: "/ˈpɪriəd/", kr: "기간, 시대", cn: "时期 (shí qī)", jp: "期間 (きかん)", ex: "Dinosaurs lived in a very old <b>period</b>." },
+      { word: "region", phonetic: "/ˈriːdʒən/", kr: "지역", cn: "地区 (dì qū)", jp: "地域 (ちいき)", ex: "Penguins live in a very cold <b>region</b>." },
+      { word: "system", phonetic: "/ˈsɪstəm/", kr: "체계, 시스템", cn: "系统 (xì tǒng)", jp: "システム (しすてむ)", ex: "Our solar <b>system</b> has eight planets." },
+      { word: "quantity", phonetic: "/ˈkwɒntɪti/", kr: "양", cn: "数量 (shù liàng)", jp: "量 (りょう)", ex: "We need a large <b>quantity</b> of water." },
+      { word: "quality", phonetic: "/ˈkwɒlɪti/", kr: "질", cn: "质量 (zhì liàng)", jp: "質 (しつ)", ex: "This pencil has very good <b>quality</b>." },
+      { word: "amount", phonetic: "/əˈmaʊnt/", kr: "총액, 양", cn: "数量 (shù liàng)", jp: "量 (りょう)", ex: "Add a small <b>amount</b> of sugar to the tea." }
+    ];
+
+    // --- Main App Component ---
+    function App() {
+      const [mainIndex, setMainIndex] = useState(0);
+      const [isFlipped, setIsFlipped] = useState(false);
+      const [highestMainIndex, setHighestMainIndex] = useState(0);
+      
+      const [inReviewSession, setInReviewSession] = useState(false);
+      const [reviewQueue, setReviewQueue] = useState([]);
+      const [reviewIndex, setReviewIndex] = useState(0);
+
+      const currentWordList = inReviewSession ? reviewQueue : vocabData;
+      const currentIndex = inReviewSession ? reviewIndex : mainIndex;
+      const currentWord = currentWordList[currentIndex];
+
+      const isEndOfMain = !inReviewSession && mainIndex >= vocabData.length;
+
+      const playTTS = (e) => {
+        e.stopPropagation();
+        if ('speechSynthesis' in window) {
+          const cleanWord = currentWord.word.replace(/\([^)]*\)/g, '').trim();
+          const utterance = new SpeechSynthesisUtterance(cleanWord);
+          utterance.lang = 'en-US';
+          utterance.rate = 0.85; 
+          window.speechSynthesis.speak(utterance);
+        } else {
+          alert("TTS is not supported in this browser.");
+        }
+      };
+
+      const handlePrev = () => {
+        setIsFlipped(false);
+        if (inReviewSession) {
+          setReviewIndex((prev) => (prev - 1 + reviewQueue.length) % reviewQueue.length);
+        } else {
+          setMainIndex((prev) => Math.max(0, prev - 1));
+        }
+      };
+
+      const handleNext = () => {
+        setIsFlipped(false);
+        if (inReviewSession) {
+          setReviewIndex((prev) => (prev + 1) % reviewQueue.length);
+        } else {
+          setMainIndex((prev) => Math.min(vocabData.length, prev + 1));
+        }
+      };
+
+      const handleO = () => {
+        setIsFlipped(false);
+        if (inReviewSession) {
+          const newQueue = reviewQueue.filter((_, idx) => idx !== reviewIndex);
+          setReviewQueue(newQueue);
+          
+          if (newQueue.length === 0) {
+            setInReviewSession(false);
+          } else {
+            setReviewIndex((prev) => prev % newQueue.length);
+          }
+        } else {
+          setHighestMainIndex((prev) => Math.max(prev, mainIndex + 1));
+          setMainIndex((prev) => prev + 1);
+        }
+      };
+
+      const handleX = () => {
+        setIsFlipped(false);
+        if (inReviewSession) {
+          setReviewIndex((prev) => (prev + 1) % reviewQueue.length);
+        } else {
+          setHighestMainIndex((prev) => Math.max(prev, mainIndex + 1));
+          const newReviewQueue = [...reviewQueue, vocabData[mainIndex]];
+          setReviewQueue(newReviewQueue);
+          
+          if (newReviewQueue.length === 5) {
+            setInReviewSession(true);
+            setReviewIndex(0);
+            setMainIndex((prev) => prev + 1);
+          } else {
+            setMainIndex((prev) => prev + 1);
+          }
+        }
+      };
+
+      const resetAll = () => {
+        setMainIndex(0);
+        setInReviewSession(false);
+        setReviewQueue([]);
+        setReviewIndex(0);
+        setIsFlipped(false);
+        setHighestMainIndex(0);
+      };
+
+      if (isEndOfMain) {
+        return (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-sky-50 p-6 font-sans">
+            <h1 className="text-4xl font-bold text-sky-800 mb-6">Great Job! 🎉</h1>
+            <p className="text-lg text-gray-700 mb-8">You have completed all vocabulary words.</p>
+            <button 
+              onClick={resetAll}
+              className="px-6 py-3 bg-sky-600 text-white rounded-xl shadow hover:bg-sky-700 transition flex items-center gap-2"
+            >
+              <RotateCcw size={20} /> Restart
+            </button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="flex flex-col items-center min-h-screen bg-slate-50 p-4 sm:p-8 font-sans">
+          
+          <div className="w-full max-w-2xl text-center mb-6">
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">ELL Vocab Flashcards</h1>
+            <p className="text-sm text-slate-600 mb-4">
+              Click the card to flip. Use 'O' if you know the word, 'X' if you don't.
+            </p>
+
+            <div className={`p-4 rounded-xl shadow-sm border-2 flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors ${inReviewSession ? 'bg-orange-50 border-orange-400' : 'bg-white border-slate-200'}`}>
+              <div className="flex flex-col text-left">
+                <span className={`font-bold text-lg ${inReviewSession ? 'text-orange-600' : 'text-slate-700'}`}>
+                  {inReviewSession ? "Review Mode Active!" : "Main Mode"}
+                </span>
+                <span className="text-xs text-slate-500">
+                  {inReviewSession 
+                    ? "You must answer 'O' for all these words to continue."
+                    : "Get 5 'X' marks to trigger a review session."}
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {!inReviewSession && (
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <div 
+                        key={i} 
+                        className={`w-4 h-4 rounded-full border-2 ${i < reviewQueue.length ? 'bg-red-500 border-red-500' : 'bg-slate-100 border-slate-300'}`}
+                      />
+                    ))}
+                  </div>
+                )}
+                {inReviewSession && (
+                  <div className="text-orange-700 font-bold bg-orange-200 px-3 py-1 rounded-full text-sm">
+                    {reviewQueue.length} words left
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="text-slate-500 font-medium mb-4">
+            {inReviewSession 
+              ? `Review Card ${reviewIndex + 1} of ${reviewQueue.length}`
+              : `Card ${mainIndex + 1} of ${vocabData.length}`}
+          </div>
+
+          <div 
+            className="w-full max-w-xl h-96 cursor-pointer"
+            onClick={() => setIsFlipped(!isFlipped)}
+          >
+            {!isFlipped ? (
+              <div className="relative w-full h-full bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col items-center justify-center p-8">
+                <button 
+                  onClick={playTTS}
+                  className="absolute top-6 right-6 p-3 bg-sky-100 text-sky-600 rounded-full hover:bg-sky-200 transition"
+                  title="Listen to pronunciation"
+                >
+                  <Volume2 size={28} />
+                </button>
+                <h2 className="text-5xl sm:text-6xl font-extrabold text-slate-800 mb-6 text-center">
+                  {currentWord.word}
+                </h2>
+                <p className="text-xl sm:text-2xl text-slate-400 font-mono tracking-wide">
+                  {currentWord.phonetic}
+                </p>
+                <p className="absolute bottom-6 text-slate-300 text-sm">Click to flip</p>
+              </div>
+            ) : (
+              <div className="relative w-full h-full bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col p-6 sm:p-8">
+                <div className="flex-1 flex flex-col justify-center space-y-4">
+                  
+                  <div className="flex items-center gap-4">
+                    <span className="px-3 py-1 bg-blue-100 text-blue-700 font-bold rounded-lg text-sm w-12 text-center">KR</span>
+                    <span className="text-2xl font-bold text-blue-900">{currentWord.kr}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <span className="px-3 py-1 bg-red-100 text-red-700 font-bold rounded-lg text-sm w-12 text-center">CN</span>
+                    <span className="text-2xl font-bold text-red-900">{currentWord.cn}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <span className="px-3 py-1 bg-emerald-100 text-emerald-700 font-bold rounded-lg text-sm w-12 text-center">JP</span>
+                    <span className="text-2xl font-bold text-emerald-900">{currentWord.jp}</span>
+                  </div>
+
+                </div>
+
+                <div className="w-full h-px bg-slate-200 my-4"></div>
+                
+                <div className="h-1/3 flex flex-col justify-center">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Example</span>
+                  <p 
+                    className="text-lg sm:text-xl text-slate-700 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: currentWord.ex }}
+                  />
+                </div>
+                <p className="absolute bottom-6 left-0 right-0 text-center text-slate-300 text-sm">Click to flip back</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between w-full max-w-xl mt-8">
+            <button 
+              onClick={handlePrev}
+              disabled={currentIndex === 0 && !inReviewSession}
+              className="flex items-center gap-2 px-4 py-3 bg-white text-slate-600 font-bold rounded-xl shadow hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              <ArrowLeft size={20} /> Prev
+            </button>
+
+            <div className="flex gap-4">
+              <button 
+                onClick={handleO}
+                className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 hover:scale-105 transition transform"
+                title="I know this word"
+              >
+                <CircleIcon size={32} strokeWidth={3} />
+              </button>
+              
+              <button 
+                onClick={handleX}
+                className="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 hover:scale-105 transition transform"
+                title="I don't know this word"
+              >
+                <XIcon size={36} strokeWidth={3} />
+              </button>
+            </div>
+
+            <button 
+              onClick={handleNext}
+              disabled={inReviewSession || mainIndex >= highestMainIndex}
+              title={inReviewSession || mainIndex >= highestMainIndex ? "Answer O or X to proceed" : "Next card"}
+              className="flex items-center gap-2 px-4 py-3 bg-white text-slate-600 font-bold rounded-xl shadow hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              Next <ArrowRight size={20} />
+            </button>
+          </div>
+          
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

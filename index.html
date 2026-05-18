@@ -16,13 +16,44 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-slate-50">
+
+  <!-- Smart Copyright & Contact Badge (Hover to expand) -->
+  <div class="fixed top-4 right-4 z-[9999] group flex flex-col items-end">
+    <!-- Collapsed Badge -->
+    <div class="bg-orange-500 text-white font-bold text-sm sm:text-base px-4 py-2 rounded-full shadow-md cursor-help opacity-90 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+      © Ms. Hana
+    </div>
+    
+    <!-- Expanded Info Box -->
+    <div class="mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-5 text-sm text-slate-600 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100 origin-top-right">
+      <h3 class="font-black text-slate-800 text-base mb-2 border-b border-slate-100 pb-2">© Hana (Hyuna) Gu</h3>
+      <ul class="space-y-2 mb-4 text-xs sm:text-sm">
+        <li class="flex items-start gap-2">
+          <span class="text-green-500 font-bold">✓</span>
+          <span>Free for <b>student self-study</b> and practice.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-red-500 font-bold">✗</span>
+          <span><b>Classroom use by other educators</b> requires explicit permission.</span>
+        </li>
+      </ul>
+      <div class="pt-3 border-t border-slate-100 text-xs sm:text-sm bg-slate-50 p-3 rounded-lg">
+        <p class="font-bold text-slate-700 mb-1">Need more levels or topics?</p>
+        <p>Contact for full access & licensing:<br>
+          <a href="mailto:hanagu.teaching@gmail.com" class="text-blue-600 font-bold hover:underline break-all">hanagu.teaching@gmail.com</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useEffect } = React;
 
     // --- SVG Icon Components ---
-    const Volume2 = ({ size = 24, className = "" }) => (
+    const VolumeIcon = ({ size = 24, className = "" }) => (
       <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
         <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -61,71 +92,71 @@
 
     // --- Vocabulary Data ---
     const vocabData = [
-      { word: "investigate (investigation)", phonetic: "/ɪnˈvɛstɪˌɡeɪt/", kr: "조사하다", cn: "调查 (diào chá)", jp: "調査する (ちょうさする)", ex: "Scientists <b>investigate</b> the ocean." },
-      { word: "survey", phonetic: "/ˈsɜːrveɪ/", kr: "설문 조사하다", cn: "调查 (diào chá)", jp: "アンケートをとる (あんけーとをとる)", ex: "We <b>survey</b> the class to find their favorite colors." },
-      { word: "research", phonetic: "/ˈriːsɜːrtʃ/", kr: "연구하다", cn: "研究 (yán jiū)", jp: "研究する (けんきゅうする)", ex: "They do <b>research</b> on space." },
-      { word: "record", phonetic: "/rɪˈkɔːrd/", kr: "기록하다", cn: "记录 (jì lù)", jp: "記録する (きろくする)", ex: "Please <b>record</b> the numbers in your notebook." },
-      { word: "collect", phonetic: "/kəˈlɛkt/", kr: "모으다", cn: "收集 (shōu jí)", jp: "集める (あつめる)", ex: "Bees <b>collect</b> honey from flowers." },
-      { word: "evidence", phonetic: "/ˈɛvɪdəns/", kr: "증거", cn: "证据 (zhèng jù)", jp: "証拠 (しょうこ)", ex: "Footprints are good <b>evidence</b>." },
-      { word: "data", phonetic: "/ˈdeɪtə/", kr: "자료, 데이터", cn: "数据 (shù jù)", jp: "データ (でーた)", ex: "We put our <b>data</b> in a chart." },
-      { word: "result", phonetic: "/rɪˈzʌlt/", kr: "결과", cn: "结果 (jié guǒ)", jp: "結果 (けっか)", ex: "What is the <b>result</b> of the game?" },
-      { word: "conclusion", phonetic: "/kənˈkluːʒən/", kr: "결론", cn: "结论 (jié lùn)", jp: "結論 (けつろん)", ex: "Our <b>conclusion</b> is that plants need water." },
-      { word: "reason", phonetic: "/ˈriːzən/", kr: "이유", cn: "原因 (yuán yīn)", jp: "理由 (りゆう)", ex: "What is the <b>reason</b> you are late?" },
-      { word: "source", phonetic: "/sɔːrs/", kr: "출처, 원천", cn: "来源 (lái yuán)", jp: "源 (みなもと)", ex: "The sun is our main <b>source</b> of light." },
-      { word: "explain", phonetic: "/ɪkˈspleɪn/", kr: "설명하다", cn: "解释 (jiě shì)", jp: "説明する (せつめいする)", ex: "Can you <b>explain</b> how this works?" },
-      { word: "predict", phonetic: "/prɪˈdɪkt/", kr: "예측하다", cn: "预测 (yù cè)", jp: "予測する (よそくする)", ex: "I <b>predict</b> it will rain tomorrow." },
-      { word: "refer to", phonetic: "/rɪˈfɜːr tuː/", kr: "~을 참조하다, 언급하다", cn: "参考 (cān kǎo)", jp: "参照する (さんしょうする)", ex: "Please <b>refer to</b> page 10 in your book." },
-      { word: "define", phonetic: "/dɪˈfaɪn/", kr: "정의하다", cn: "定义 (dìng yì)", jp: "定義する (ていぎする)", ex: "Can you <b>define</b> this word for me?" },
-      { word: "cause", phonetic: "/kɔːz/", kr: "원인, 일으키다", cn: "原因 (yuán yīn)", jp: "原因 (げんいん)", ex: "The heavy rain will <b>cause</b> a flood." },
-      { word: "effect", phonetic: "/ɪˈfɛkt/", kr: "효과, 영향", cn: "效果 (xiào guǒ)", jp: "効果 (こうか)", ex: "The medicine had a good <b>effect</b>." },
-      { word: "affect", phonetic: "/əˈfɛkt/", kr: "영향을 미치다", cn: "影响 (yǐng xiǎng)", jp: "影響する (えいきょうする)", ex: "The cold weather will <b>affect</b> the crops." },
-      { word: "impact", phonetic: "/ˈɪmpækt/", kr: "강한 영향, 충격", cn: "影响 (yǐng xiǎng)", jp: "影響 (えいきょう)", ex: "The new rule has a big <b>impact</b> on us." },
-      { word: "influence", phonetic: "/ˈɪnfluəns/", kr: "영향(력)", cn: "影响 (yǐng xiǎng)", jp: "影響 (えいきょう)", ex: "Friends can <b>influence</b> what we like." },
-      { word: "structure", phonetic: "/ˈstrʌktʃər/", kr: "구조", cn: "结构 (jié gòu)", jp: "構造 (こうぞう)", ex: "A bridge has a strong <b>structure</b>." },
-      { word: "environment", phonetic: "/ɪnˈvaɪrənmənt/", kr: "환경", cn: "环境 (huán jìng)", jp: "環境 (かんきょう)", ex: "We must protect our <b>environment</b>." },
-      { word: "observe (observation)", phonetic: "/əbˈzɜːrv/", kr: "관찰하다", cn: "观察 (guān chá)", jp: "観察する (かんさつする)", ex: "We <b>observe</b> the birds in the tree." },
-      { word: "notice", phonetic: "/ˈnoʊtɪs/", kr: "알아차리다", cn: "注意 (zhù yì)", jp: "気付く (きづく)", ex: "Did you <b>notice</b> the new poster?" },
-      { word: "describe", phonetic: "/dɪˈskraɪb/", kr: "묘사하다, 설명하다", cn: "描述 (miáo shù)", jp: "描写する (びょうしゃする)", ex: "Please <b>describe</b> your lost dog." },
-      { word: "compare (comparison)", phonetic: "/kəmˈpɛr/", kr: "비교하다", cn: "比较 (bǐ jiào)", jp: "比較する (ひかくする)", ex: "Let's <b>compare</b> the sizes of these two apples." },
-      { word: "contrast", phonetic: "/ˈkɒntræst/", kr: "대조하다", cn: "对比 (duì bǐ)", jp: "対照する (たいしょうする)", ex: "The black and white colors show a sharp <b>contrast</b>." },
-      { word: "classify", phonetic: "/ˈklæsɪfaɪ/", kr: "분류하다", cn: "分类 (fēn lèi)", jp: "分類する (ぶんるいする)", ex: "We <b>classify</b> animals into different groups." },
-      { word: "identify", phonetic: "/aɪˈdɛntɪfaɪ/", kr: "확인하다, 식별하다", cn: "识别 (shí bié)", jp: "特定する (とくていする)", ex: "Can you <b>identify</b> this strange bug?" },
-      { word: "process", phonetic: "/ˈprɒsɛs/", kr: "과정", cn: "过程 (guò chéng)", jp: "過程 (かてい)", ex: "Making a cake is a fun <b>process</b>." },
-      { word: "experiment", phonetic: "/ɪkˈspɛrɪmənt/", kr: "실험", cn: "实验 (shí yàn)", jp: "実験 (じっけん)", ex: "We do a science <b>experiment</b> in class." },
-      { word: "conduct", phonetic: "/kənˈdʌkt/", kr: "수행하다", cn: "进行 (jìn xíng)", jp: "実施する (じっしする)", ex: "We will <b>conduct</b> a test tomorrow." },
-      { word: "measure", phonetic: "/ˈmɛʒər/", kr: "측정하다", cn: "测量 (cè liáng)", jp: "測る (はかる)", ex: "Use a ruler to <b>measure</b> the line." },
-      { word: "element", phonetic: "/ˈɛlɪmənt/", kr: "요소", cn: "元素 (yuán sù)", jp: "要素 (ようそ)", ex: "Water is an important <b>element</b> for life." },
-      { word: "factor", phonetic: "/ˈfæktər/", kr: "요인", cn: "因素 (yīn sù)", jp: "要因 (よういん)", ex: "Sunlight is a key <b>factor</b> for plant growth." },
-      { word: "relationship", phonetic: "/rɪˈleɪʃənʃɪp/", kr: "관계", cn: "关系 (guān xì)", jp: "関係 (かんけい)", ex: "Dogs and humans have a close <b>relationship</b>." },
-      { word: "increase", phonetic: "/ɪnˈkriːs/", kr: "증가하다", cn: "增加 (zēng jiā)", jp: "増加する (ぞうかする)", ex: "The number of birds will <b>increase</b> in spring." },
-      { word: "decrease", phonetic: "/dɪˈkriːs/", kr: "감소하다", cn: "减少 (jiǎn shǎo)", jp: "減少する (げんしょうする)", ex: "The temperature will <b>decrease</b> at night." },
-      { word: "similar", phonetic: "/ˈsɪmɪlər/", kr: "비슷한", cn: "相似 (xiāng sì)", jp: "似ている (にている)", ex: "Those two cars look very <b>similar</b>." },
-      { word: "different", phonetic: "/ˈdɪfərənt/", kr: "다른", cn: "不同 (bù tóng)", jp: "異なる (ことなる)", ex: "My bag is <b>different</b> from yours." },
-      { word: "communication", phonetic: "/kəˌmjuːnɪˈkeɪʃən/", kr: "의사소통", cn: "交流 (jiāo liú)", jp: "コミュニケーション (こみゅにけーしょん)", ex: "Talking is a form of <b>communication</b>." },
-      { word: "representation", phonetic: "/ˌrɛprɪzɛnˈteɪʃən/", kr: "표현, 대표", cn: "代表 (dài biǎo)", jp: "表現 (ひょうげん)", ex: "A map is a <b>representation</b> of the earth." },
-      { word: "chart", phonetic: "/tʃɑːrt/", kr: "차트, 도표", cn: "图表 (tú biǎo)", jp: "図表 (ずひょう)", ex: "Look at the <b>chart</b> to see the scores." },
-      { word: "graph", phonetic: "/ɡræf/", kr: "그래프", cn: "图表 (tú biǎo)", jp: "グラフ (ぐらふ)", ex: "A bar <b>graph</b> shows differences clearly." },
-      { word: "diagram", phonetic: "/ˈdaɪəɡræm/", kr: "도해, 다이어그램", cn: "图解 (tú jiě)", jp: "図 (ず)", ex: "Draw a <b>diagram</b> of a plant cell." },
-      { word: "model", phonetic: "/ˈmɒdl/", kr: "모형", cn: "模型 (mó xíng)", jp: "模型 (もけい)", ex: "We built a small <b>model</b> of a house." },
-      { word: "demonstrate", phonetic: "/ˈdɛmənstreɪt/", kr: "시범을 보이다", cn: "演示 (yǎn shì)", jp: "実演する (じつえんする)", ex: "The teacher will <b>demonstrate</b> how to fold the paper." },
-      { word: "summarize", phonetic: "/ˈsʌməraɪz/", kr: "요약하다", cn: "总结 (zǒng jié)", jp: "要約する (ようやくする)", ex: "Can you <b>summarize</b> the story in three sentences?" },
-      { word: "infer", phonetic: "/ɪnˈfɜːr/", kr: "추론하다", cn: "推断 (tuī duàn)", jp: "推論する (すいろんする)", ex: "We can <b>infer</b> that she is happy because she is smiling." },
-      { word: "characteristic", phonetic: "/ˌkærɪktəˈrɪstɪk/", kr: "특징", cn: "特征 (tè zhēng)", jp: "特徴 (とくちょう)", ex: "A trunk is a main <b>characteristic</b> of an elephant." },
-      { word: "feature", phonetic: "/ˈfiːtʃər/", kr: "특징", cn: "特点 (tè diǎn)", jp: "特徴 (とくちょう)", ex: "Wings are a special <b>feature</b> of birds." },
-      { word: "property", phonetic: "/ˈprɒpərti/", kr: "성질, 속성", cn: "性质 (xìng zhì)", jp: "性質 (せいしつ)", ex: "Hardness is a <b>property</b> of a rock." },
-      { word: "function", phonetic: "/ˈfʌŋkʃən/", kr: "기능", cn: "功能 (gōng néng)", jp: "機能 (きのう)", ex: "The <b>function</b> of a heart is to pump blood." },
-      { word: "variety", phonetic: "/vəˈraɪəti/", kr: "다양성", cn: "多样 (duō yàng)", jp: "多様性 (たようせい)", ex: "The store sells a wide <b>variety</b> of toys." },
-      { word: "analyze (analysis)", phonetic: "/ˈænəlaɪz/", kr: "분석하다", cn: "分析 (fēn xī)", jp: "分析する (ぶんせきする)", ex: "Let's <b>analyze</b> the math problem together." },
-      { word: "examine", phonetic: "/ɪɡˈzæmɪn/", kr: "조사하다, 검토하다", cn: "检查 (jiǎn chá)", jp: "調べる (しらべる)", ex: "The doctor will <b>examine</b> your throat." },
-      { word: "evaluate", phonetic: "/ɪˈvæljueɪt/", kr: "평가하다", cn: "评价 (píng jià)", jp: "評価する (ひょうかする)", ex: "We must <b>evaluate</b> the results of the test." },
-      { word: "represent", phonetic: "/ˌrɛprɪˈzɛnt/", kr: "나타내다, 상징하다", cn: "代表 (dài biǎo)", jp: "表す (あらわす)", ex: "The red color can <b>represent</b> danger." },
-      { word: "organize", phonetic: "/ˈɔːrɡənaɪz/", kr: "정리하다", cn: "组织 (zǔ zhī)", jp: "整理する (せいりする)", ex: "Please <b>organize</b> your desk before you leave." },
-      { word: "period", phonetic: "/ˈpɪriəd/", kr: "기간, 시대", cn: "时期 (shí qī)", jp: "期間 (きかん)", ex: "Dinosaurs lived in a very old <b>period</b>." },
-      { word: "region", phonetic: "/ˈriːdʒən/", kr: "지역", cn: "地区 (dì qū)", jp: "地域 (ちいき)", ex: "Penguins live in a very cold <b>region</b>." },
-      { word: "system", phonetic: "/ˈsɪstəm/", kr: "체계, 시스템", cn: "系统 (xì tǒng)", jp: "システム (しすてむ)", ex: "Our solar <b>system</b> has eight planets." },
-      { word: "quantity", phonetic: "/ˈkwɒntɪti/", kr: "양", cn: "数量 (shù liàng)", jp: "量 (りょう)", ex: "We need a large <b>quantity</b> of water." },
-      { word: "quality", phonetic: "/ˈkwɒlɪti/", kr: "질", cn: "质量 (zhì liàng)", jp: "質 (しつ)", ex: "This pencil has very good <b>quality</b>." },
-      { word: "amount", phonetic: "/əˈmaʊnt/", kr: "총액, 양", cn: "数量 (shù liàng)", jp: "量 (りょう)", ex: "Add a small <b>amount</b> of sugar to the tea." }
+      { word: "investigate (investigation)", phonetic: "/ɪnˈvɛstɪˌɡeɪt/", def: "to look closely at something to find the truth", kr: "조사하다", cn: "调查 (diào chá)", jp: "調査する (ちょうさする)", ex: "Scientists <b>investigate</b> the ocean." },
+      { word: "survey", phonetic: "/ˈsɜːrveɪ/", def: "to ask many people questions to find information", kr: "설문 조사하다", cn: "调查 (diào chá)", jp: "アンケートをとる (あんけーとをとる)", ex: "We <b>survey</b> the class to find their favorite colors." },
+      { word: "research", phonetic: "/ˈriːsɜːrtʃ/", def: "careful study of a subject to find facts", kr: "연구하다", cn: "研究 (yán jiū)", jp: "研究する (けんきゅうする)", ex: "They do <b>research</b> on space." },
+      { word: "record", phonetic: "/rɪˈkɔːrd/", def: "to write down or save information for later", kr: "기록하다", cn: "记录 (jì lù)", jp: "記録する (きろくする)", ex: "Please <b>record</b> the numbers in your notebook." },
+      { word: "collect", phonetic: "/kəˈlɛkt/", def: "to bring together things from different places", kr: "모으다", cn: "收集 (shōu jí)", jp: "集める (あつめる)", ex: "Bees <b>collect</b> honey from flowers." },
+      { word: "evidence", phonetic: "/ˈɛvɪdəns/", def: "facts or signs that show something is true", kr: "증거", cn: "证据 (zhèng jù)", jp: "証拠 (しょうこ)", ex: "Footprints are good <b>evidence</b>." },
+      { word: "data", phonetic: "/ˈdeɪtə/", def: "facts, numbers, or information used to learn", kr: "자료, 데이터", cn: "数据 (shù jù)", jp: "データ (でーた)", ex: "We put our <b>data</b> in a chart." },
+      { word: "result", phonetic: "/rɪˈzʌlt/", def: "something that happens because of an action", kr: "결과", cn: "结果 (jié guǒ)", jp: "結果 (けっか)", ex: "What is the <b>result</b> of the game?" },
+      { word: "conclusion", phonetic: "/kənˈkluːʒən/", def: "an opinion or decision you make after learning facts", kr: "결론", cn: "结论 (jié lùn)", jp: "結論 (けつろん)", ex: "Our <b>conclusion</b> is that plants need water." },
+      { word: "reason", phonetic: "/ˈriːsən/", def: "why something happens or why you do something", kr: "이유", cn: "原因 (yuán yīn)", jp: "理由 (りゆう)", ex: "What is the <b>reason</b> you are late?" },
+      { word: "source", phonetic: "/sɔːrs/", def: "where something comes from or starts", kr: "출처, 원천", cn: "来源 (lai yuán)", jp: "源 (みなもと)", ex: "The sun is our main <b>source</b> of light." },
+      { word: "explain", phonetic: "/ɪkˈspleɪn/", def: "to make something clear or easy to understand", kr: "설명하다", cn: "解释 (jiě  shì)", jp: "説明する (せつめいする)", ex: "Can you <b>explain</b> how this works?" },
+      { word: "predict", phonetic: "/prɪˈdɪkt/", def: "to guess what will happen in the future", kr: "예측하다", cn: "预测 (yù cè)", jp: "予測する (よそくする)", ex: "I <b>predict</b> it will rain tomorrow." },
+      { word: "refer to", phonetic: "/rɪˈfɜːr tuː/", def: "to look at something for help or information", kr: "~을 참조하다, 언급하다", cn: "参考 (cān kǎo)", jp: "参照する (さんしょうする)", ex: "Please <b>refer to</b> page 10 in your book." },
+      { word: "define", phonetic: "/dɪˈfaɪn/", def: "to explain the exact meaning of a word", kr: "정의하다", cn: "定义 (dìng yì)", jp: "定義する (ていぎする)", ex: "Can you <b>define</b> this word for me?" },
+      { word: "cause", phonetic: "/kɔːz/", def: "someone or something that makes something happen", kr: "원인, 일으키다", cn: "原因 (yuán yīn)", jp: "原因 (げんいん)", ex: "The heavy rain will <b>cause</b> a flood." },
+      { word: "effect", phonetic: "/ɪˈfɛkt/", def: "a change that happens because of a cause", kr: "효과, 영향", cn: "效果 (xiào guǒ)", jp: "効果 (こうか)", ex: "The medicine had a good <b>effect</b>." },
+      { word: "affect", phonetic: "/əˈfɛkt/", def: "to make a change or have an effect on something", kr: "영향을 미치다", cn: "影响 (yǐng xiǎng)", jp: "影響する (えいきょうする)", ex: "The cold weather will <b>affect</b> the crops." },
+      { word: "impact", phonetic: "/ˈɪmpækt/", def: "a strong, powerful effect or influence", kr: "강한 영향, 충격", cn: "影响 (yǐng xiǎng)", jp: "影响 (えいきょう)", ex: "The new rule has a big <b>impact</b> on us." },
+      { word: "influence", phonetic: "/ˈɪnfluəns/", def: "the power to change how someone thinks or acts", kr: "영향(력)", cn: "影响 (yǐng xiǎng)", jp: "影響 (えいきょう)", ex: "Friends can <b>influence</b> what we like." },
+      { word: "structure", phonetic: "/ˈstrʌktʃər/", def: "how the parts of something are put together", kr: "구조", cn: "结构 (jié gòu)", jp: "構造 (こうぞう)", ex: "A bridge has a strong <b>structure</b>." },
+      { word: "environment", phonetic: "/ɪnˈvaɪrənmənt/", def: "the air, water, land, and natural world around us", kr: "환경", cn: "环境 (huán jìng)", jp: "環境 (かんきょう)", ex: "We must protect our <b>environment</b>." },
+      { word: "observe (observation)", phonetic: "/əbˈzɜːrv/", def: "to watch something carefully to learn about it", kr: "관찰하다", cn: "观察 (guān chá)", jp: "観察する (かんさつする)", ex: "We <b>observe</b> the birds in the tree." },
+      { word: "notice", phonetic: "/ˈnoʊtɪs/", def: "to see or become aware of something", kr: "알아차리다", cn: "注意 (zhù yì)", jp: "気付く (きづく)", ex: "Did you <b>notice</b> the new poster?" },
+      { word: "describe", phonetic: "/dɪˈskraɪb/", def: "to tell or write about what something is like", kr: "묘사하다, 설명하다", cn: "描述 (miáo shù)", jp: "描写する (びょうしゃする)", ex: "Please <b>describe</b> your lost dog." },
+      { word: "compare (comparison)", phonetic: "/kəmˈpɛr/", def: "to look at two things to see how they are alike", kr: "비교하다", cn: "比较 (bǐ jiào)", jp: "比較する (ひかくする)", ex: "Let's <b>compare</b> the sizes of these two apples." },
+      { word: "contrast", phonetic: "/ˈkɒntræst/", def: "to look at two things to see how they are different", kr: "대조하다", cn: "对比 (duì bǐ)", jp: "対照する (たいしょうする)", ex: "The black and white colors show a sharp <b>contrast</b>." },
+      { word: "classify", phonetic: "/ˈklæsɪfaɪ/", def: "to group things together by their types", kr: "분류하다", cn: "分类 (fēn lèi)", jp: "分类する (ぶんるいする)", ex: "We <b>classify</b> animals into different groups." },
+      { word: "identify", phonetic: "/aɪˈdɛntɪfaɪ/", def: "to find out or show who or what something is", kr: "확인하다, 식별하다", cn: "识别 (shí bié)", jp: "特定する (とくていする)", ex: "Can you <b>identify</b> this strange bug?" },
+      { word: "process", phonetic: "/ˈprɒsɛs/", def: "a series of steps that happen to get a result", kr: "과정", cn: "过程 (guò chéng)", jp: "過程 (かてい)", ex: "Making a cake is a fun <b>process</b>." },
+      { word: "experiment", phonetic: "/ɪkˈspɛrɪmənt/", def: "a science test to find out how something works", kr: "실험", cn: "实验 (shí yàn)", jp: "実験 (じっけん)", ex: "We do a science <b>experiment</b> in class." },
+      { word: "conduct", phonetic: "/kənˈdʌkt/", def: "to organize and do a specific activity", kr: "수행하다", cn: "进行 (jìn xíng)", jp: "实施する (じっしする)", ex: "We will <b>conduct</b> a test tomorrow." },
+      { word: "measure", phonetic: "/ˈmɛʒər/", def: "to find the size, weight, or amount of something", kr: "측정하다", cn: "测量 (cè liáng)", jp: "測る (はかる)", ex: "Use a ruler to <b>measure</b> the line." },
+      { word: "element", phonetic: "/ˈɛlɪmənt/", def: "a basic or simple part of something bigger", kr: "요소", cn: "元素 (yuán sù)", jp: "要素 (ようそ)", ex: "Water is an important <b>element</b> for life." },
+      { word: "factor", phonetic: "/ˈfæktər/", def: "one of the things that causes a result", kr: "요인", cn: "因素 (yīn sù)", jp: "要因 (よういん)", ex: "Sunlight is a key <b>factor</b> for plant growth." },
+      { word: "relationship", phonetic: "/rɪˈleɪʃənʃɪp/", def: "how two or more things are connected to each other", kr: "관계", cn: "关系 (guān xì)", jp: "关系 (かんけい)", ex: "Dogs and humans have a close <b>relationship</b>." },
+      { word: "increase", phonetic: "/ɪnˈkriːs/", def: "to make or become larger in size or number", kr: "증가하다", cn: "增加 (zēng jiā)", jp: "増加する (ぞ우か하는)", ex: "The number of birds will <b>increase</b> in spring." },
+      { word: "decrease", phonetic: "/dɪˈkriːs/", def: "to make or become smaller in size or number", kr: "감소하다", cn: "减少 (jiǎn shǎo)", jp: "減少する (げんしょうする)", ex: "The temperature will <b>decrease</b> at night." },
+      { word: "similar", phonetic: "/ˈsɪmɪlər/", def: "looking or being almost the same, but not exact", kr: "비슷한", cn: "相似 (xiāng sì)", jp: "似ている (にている)", ex: "Those two cars look very <b>similar</b>." },
+      { word: "different", phonetic: "/ˈdɪfərənt/", def: "not the same as another thing", kr: "다른", cn: "不同 (bù tóng)", jp: "異なる (ことなる)", ex: "My bag is <b>different</b> from yours." },
+      { word: "communication", phonetic: "/kəˌmjuːnɪˈkeɪʃən/", def: "sharing ideas, feelings, or information with others", kr: "의사소통", cn: "交流 (jiāo liú)", jp: "コミュニケーション (こみゅにけーしょん)", ex: "Talking is a form of <b>communication</b>." },
+      { word: "representation", phonetic: "/ˌrɛprɪzɛnˈteɪʃən/", def: "a sign, picture, or model that shows something else", kr: "표현, 대표", cn: "代表 (dài biǎo)", jp: "表現 (ひょうげん)", ex: "A map is a <b>representation</b> of the earth." },
+      { word: "chart", phonetic: "/tʃɑːrt/", def: "a drawing that shows information with shapes or symbols", kr: "차트, 도표", cn: "图表 (tú biǎo)", jp: "図表 (ずひょう)", ex: "Look at the <b>chart</b> to see the scores." },
+      { word: "graph", phonetic: "/ɡræf/", def: "a drawing that uses lines or bars to show numbers", kr: "그래프", cn: "图表 (tú biǎo)", jp: "グラフ (ぐらふ)", ex: "A bar <b>graph</b> shows differences clearly." },
+      { word: "diagram", phonetic: "/ˈdaɪəɡræm/", def: "a simple drawing that explains how something works", kr: "도해, 다이어그램", cn: "图解 (tú jiě)", jp: "図 (ず)", ex: "Draw a <b>diagram</b> of a plant cell." },
+      { word: "model", phonetic: "/ˈmɒdl/", def: "a small copy or version of an object", kr: "모형", cn: "模型 (mó xíng)", jp: "模型 (もけい)", ex: "We built a small <b>model</b> of a house." },
+      { word: "demonstrate", phonetic: "/ˈdɛmənstreɪt/", def: "to show or explain how something works by doing it", kr: "시범을 보이다", cn: "演示 (yǎn shì)", jp: "实演する (じつえんする)", ex: "The teacher will <b>demonstrate</b> how to fold the paper." },
+      { word: "summarize", phonetic: "/ˈsʌməraɪz/", def: "to tell only the most important parts of a story", kr: "요약하다", cn: "总结 (zǒng jié)", jp: "要約する (ようやくする)", ex: "Can you <b>summarize</b> the story in three sentences?" },
+      { word: "infer", phonetic: "/ɪnˈfɜːr/", def: "to make a guess using the facts you know", kr: "추론하다", cn: "推断 (tuī duàn)", jp: "推論する (すいろんする)", ex: "We can <b>infer</b> that she is happy because she is smiling." },
+      { word: "characteristic", phonetic: "/ˌkærɪktəˈrɪstɪk/", def: "a special feature that belongs to only one thing", kr: "특징", cn: "特征 (tè zhēng)", jp: "特徴 (とくちょう)", ex: "A trunk is a main <b>characteristic</b> of an elephant." },
+      { word: "feature", phonetic: "/ˈfiːtʃər/", def: "an important or interesting part of something", kr: "특징", cn: "特点 (tè diǎn)", jp: "特徴 (とくちょう)", ex: "Wings are a special <b>feature</b> of birds." },
+      { word: "property", phonetic: "/ˈprɒpərti/", def: "a natural quality of something, like being hard or soft", kr: "성질, 속성", cn: "性质 (xìng zhì)", jp: "性質 (せいしつ)", ex: "Hardness is a <b>property</b> of a rock." },
+      { word: "function", phonetic: "/ˈfʌŋkʃən/", def: "the natural purpose or job of something", kr: "기능", cn: "功能 (gōng néng)", jp: "機能 (きのう)", ex: "The <b>function</b> of a heart is to pump blood." },
+      { word: "variety", phonetic: "/vəˈraɪəti/", def: "many different types of something", kr: "다양성", cn: "多样 (duō yàng)", jp: "多様性 (たようせい)", ex: "The store sells a wide <b>variety</b> of toys." },
+      { word: "analyze (analysis)", phonetic: "/ˈænəlaɪz/", def: "to study something very carefully to understand it", kr: "분석하다", cn: "分析 (fēn xī)", jp: "分析する (ぶんせきする)", ex: "Let's <b>analyze</b> the math problem together." },
+      { word: "examine", phonetic: "/ɪɡˈzæmɪn/", def: "to look at something very closely to check it", kr: "조사하다, 검토하다", cn: "检查 (jiǎn chá)", jp: "調べる (しらべる)", ex: "The doctor will <b>examine</b> your throat." },
+      { word: "evaluate", phonetic: "/ɪˈvæljueɪt/", def: "to judge how good or useful something is", kr: "평가하다", cn: "评价 (píng jià)", jp: "評価する (ひょうかする)", ex: "We must <b>evaluate</b> the results of the test." },
+      { word: "represent", phonetic: "/ˌrɛprɪˈzɛnt/", def: "to stand for or be a sign of something", kr: "나타내다, 상징하다", cn: "代表 (dài biǎo)", jp: "表す (あらわす)", ex: "The red color can <b>represent</b> danger." },
+      { word: "organize", phonetic: "/ˈɔːrɡənaɪz/", def: "to put things into a neat and clear order", kr: "정리하다", cn: "组织 (zǔ zhī)", jp: "整理する (せいりする)", ex: "Please <b>organize</b> your desk before you leave." },
+      { word: "period", phonetic: "/ˈpɪriəd/", def: "a specific length of time in history or life", kr: "기간, 시대", cn: "时期 (shí qī)", jp: "期間 (きかん)", ex: "Dinosaurs lived in a very old <b>period</b>." },
+      { word: "region", phonetic: "/ˈriːdʒən/", def: "a large area or part of a country or the world", kr: "지역", cn: "地区 (dì qū)", jp: "地域 (ちいき)", ex: "Penguins live in a very cold <b>region</b>." },
+      { word: "system", phonetic: "/ˈsɪstəm/", def: "a set of parts working together to do a job", kr: "체계, 시스템", cn: "系统 (xì tǒng)", jp: "システム (しすてむ)", ex: "Our solar <b>system</b> has eight planets." },
+      { word: "quantity", phonetic: "/ˈkwɒntɪti/", def: "an amount of something that you can measure or count", kr: "양", cn: "数量 (shù liàng)", jp: "量 (りょう)", ex: "We need a large <b>quantity</b> of water." },
+      { word: "quality", phonetic: "/ˈkwɒlɪti/", def: "how good or well-made something is", kr: "질", cn: "质量 (zhì liàng)", jp: "質 (しつ)", ex: "This pencil has very good <b>quality</b>." },
+      { word: "amount", phonetic: "/əˈmaʊnt/", def: "how much of something there is", kr: "총액, 양", cn: "数量 (shù liàng)", jp: "量 (りょう)", ex: "Add a small <b>amount</b> of sugar to the tea." }
     ];
 
     // --- Main App Component ---
@@ -156,6 +187,8 @@
           alert("TTS is not supported in this browser.");
         }
       };
+
+      const handleFlip = () => setIsFlipped(!isFlipped);
 
       const handlePrev = () => {
         setIsFlipped(false);
@@ -283,17 +316,17 @@
           </div>
 
           <div 
-            className="w-full max-w-xl h-96 cursor-pointer"
-            onClick={() => setIsFlipped(!isFlipped)}
+            className="w-full max-w-xl h-96 cursor-pointer relative"
+            onClick={handleFlip}
           >
             {!isFlipped ? (
-              <div className="relative w-full h-full bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col items-center justify-center p-8">
+              <div className="absolute inset-0 bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col items-center justify-center p-8">
                 <button 
                   onClick={playTTS}
                   className="absolute top-6 right-6 p-3 bg-sky-100 text-sky-600 rounded-full hover:bg-sky-200 transition"
                   title="Listen to pronunciation"
                 >
-                  <Volume2 size={28} />
+                  <VolumeIcon size={28} />
                 </button>
                 <h2 className="text-5xl sm:text-6xl font-extrabold text-slate-800 mb-6 text-center">
                   {currentWord.word}
@@ -304,36 +337,45 @@
                 <p className="absolute bottom-6 text-slate-300 text-sm">Click to flip</p>
               </div>
             ) : (
-              <div className="relative w-full h-full bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col p-6 sm:p-8">
-                <div className="flex-1 flex flex-col justify-center space-y-4">
+              <div className="absolute inset-0 bg-white rounded-3xl shadow-lg border border-slate-100 flex flex-col p-6 sm:p-8 justify-between">
+                
+                {/* English Definition Box (Newly Added at the top of Card Back) */}
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-left">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">English Definition</span>
+                  <p className="text-base font-semibold text-slate-700 leading-snug">
+                    {currentWord.def}
+                  </p>
+                </div>
+
+                <div className="flex-1 flex flex-col justify-center space-y-3 mt-2">
                   
                   <div className="flex items-center gap-4">
                     <span className="px-3 py-1 bg-blue-100 text-blue-700 font-bold rounded-lg text-sm w-12 text-center">KR</span>
-                    <span className="text-2xl font-bold text-blue-900">{currentWord.kr}</span>
+                    <span className="text-xl sm:text-2xl font-bold text-blue-900">{currentWord.kr}</span>
                   </div>
                   
                   <div className="flex items-center gap-4">
                     <span className="px-3 py-1 bg-red-100 text-red-700 font-bold rounded-lg text-sm w-12 text-center">CN</span>
-                    <span className="text-2xl font-bold text-red-900">{currentWord.cn}</span>
+                    <span className="text-xl sm:text-2xl font-bold text-red-900">{currentWord.cn}</span>
                   </div>
                   
                   <div className="flex items-center gap-4">
                     <span className="px-3 py-1 bg-emerald-100 text-emerald-700 font-bold rounded-lg text-sm w-12 text-center">JP</span>
-                    <span className="text-2xl font-bold text-emerald-900">{currentWord.jp}</span>
+                    <span className="text-xl sm:text-2xl font-bold text-emerald-900">{currentWord.jp}</span>
                   </div>
 
                 </div>
 
-                <div className="w-full h-px bg-slate-200 my-4"></div>
+                <div className="w-full h-px bg-slate-200 my-3"></div>
                 
-                <div className="h-1/3 flex flex-col justify-center">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Example</span>
+                <div className="h-1/4 flex flex-col justify-center">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Example</span>
                   <p 
-                    className="text-lg sm:text-xl text-slate-700 leading-relaxed"
+                    className="text-base sm:text-lg text-slate-700 leading-normal"
                     dangerouslySetInnerHTML={{ __html: currentWord.ex }}
                   />
                 </div>
-                <p className="absolute bottom-6 left-0 right-0 text-center text-slate-300 text-sm">Click to flip back</p>
+                <p className="absolute bottom-4 left-0 right-0 text-center text-slate-300 text-sm">Click to flip back</p>
               </div>
             )}
           </div>
@@ -382,9 +424,5 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
-    <!-- Watermark: Ms. Hana's ELL Class -->
-  <div class="fixed top-4 right-4 text-orange-400/60 font-bold text-xl sm:text-2xl tracking-widest pointer-events-none select-none z-[9999]">
-    Ms. Hana's ELL Class
-  </div>
 </body>
 </html>
